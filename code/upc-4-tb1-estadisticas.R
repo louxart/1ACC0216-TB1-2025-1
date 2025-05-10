@@ -48,7 +48,7 @@ table_cancelaciones
 #¿Cual es el pais con mayor numero de reservas?
 top_paises <- as.data.frame(table(df$country))
 top_paises <- top_countries[order(-top_countries$Freq), ]
-top10 <- head(top_countries, 10)
+top10 <- head(top_paises, 10)
 ggplot(top10, aes(x = reorder(Var1, -Freq), y = Freq)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Top 10 países con más reservas",
@@ -58,3 +58,4 @@ ggplot(top10, aes(x = reorder(Var1, -Freq), y = Freq)) +
 table_paises <- sort(table(df$country), decreasing = TRUE)
 table_paises
 #Con 46215 reservas realizadas, el país con mayor numero de reservas es PRT (Portugal)
+
