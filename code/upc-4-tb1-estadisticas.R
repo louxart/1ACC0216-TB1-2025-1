@@ -126,7 +126,7 @@ tabla_mes <- tabla_mes %>%
     TRUE ~ "Alta"
   ))
 
-# Gráfico con colores por temporada
+# Gráfico por temporada
 ggplot(tabla_mes, aes(x = Mes, y = Reservas, fill = Temporada)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = Reservas), vjust = 1.5, color = "white") +
