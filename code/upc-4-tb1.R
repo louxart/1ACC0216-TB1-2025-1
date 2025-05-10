@@ -27,7 +27,6 @@ df$arrival_date_day_of_month<-as.factor(df$arrival_date_day_of_month)
 df$arrival_date_year<-as.factor(df$arrival_date_year)
 
 summary(df)
-
 #Pre-procesamiento de datos
 library(ggplot2)
 library(cowplot)
@@ -49,16 +48,16 @@ summary(df)
 aggr(df,numbers=T,sortVar=T) 
 #Para los factores: En el caso de company, los NA's se interpretan como que no fueron 
 #con una compañia, igual en agente, por lo tanto, eliminarlo sería erroneo
-levels(df$company) <- c(levels(df$company), "No usó compañía")
-df$company[is.na(df$company)] <- "No usó compañía"
-levels(df$agent) <- c(levels(df$agent), "No usó agencia")
-df$agent[is.na(df$agent)] <- "No usó agencia"
-#Para meal: No meal package
-levels(df$meal) <- c(levels(df$meal),"No meal package")
-df$meal[is.na(df$meal)] <- "No meal package"
+levels(df$company) <- c(levels(df$company), "No company")
+df$company[is.na(df$company)] <- "No company"
+levels(df$agent) <- c(levels(df$agent), "No agency")
+df$agent[is.na(df$agent)] <- "No agency"
+#Para meal: No meal package tambien esta dentro de SC, ya que no hubo registro
+df$meal[is.na(df$meal)] <- "SC"
 #Para country: Como no hubo pais de origen, entonces se supondria que es el mismo pais (a debatir)
-levels(df$country)<-c(levels(df$country),"OH") #Origin Here
-df$country[is.na(df$country)] <- "OH"
+paises_na<- sum(is.na(df$country))
+paises_na
+df <- df[!is.na(df$country), ]
 #Para distribution_channel y market_segment: Debido a que son pocas las variables que presentan NA's se usará moda
 df.limpia <- impute(df,classes = list(factor=imputeMode(),
                                       integer = imputeMode(),
@@ -77,20 +76,28 @@ p1<-ggplot(df.limpia, aes(x =adr)) +
   )+
   theme_classic()
 p1
-
-Q1 <- quantile(df.limpia$adr, 0.25)
-Q3 <- quantile(df.limpia$adr, 0.75)
-IQR <- Q3 - Q1
-lim_inferior <- Q1 - 1.5 * IQR
-lim_superior <- Q3 + 1.5 * IQR
-
+summary(df.limpia$adr)
+lim_inferior <- quantile(df.limpia$adr, 0.01) 
+Q1<-quantile(df.limpia$adr,0.25)
+Q3<-quantile(df.limpia$adr,0.75)
+IQR<-Q3-Q1
+lim_superior<-Q3+1.5*IQR
 atipicos <- df.limpia$adr[df.limpia$adr < lim_inferior | df.limpia$adr > lim_superior]
 atipicos #Hay 3793 valores atipicos
-df.limpia_median <- median(df.limpia$adr)
-df.limpia$adr<- ifelse(df.limpia$adr < lim_inferior | 
-                                       df.limpia$adr>lim_superior,
-                                     df.limpia_median,df.limpia$adr)
+df.limpia$adr <- ifelse(df.limpia$adr < lim_inferior, lim_inferior,  
+                         ifelse(df.limpia$adr > lim_superior, lim_superior,df.limpia$adr))
 
-par(mfrow=c(1,2))
-boxplot(df.limpia$adr,main="ADR sin tanto outliners",col=5)
+atipicos <- df.limpia$adr[df.limpia$adr < lim_inferior | df.limpia$adr > lim_superior]
+atipicos #Hay 0 valores atipicos
+boxplot(df.limpia$adr,main="ADR sin outliners",col=5)
+summary(df.limpia$adr)
+
+df.limpia<- df.limpia[df.limpia$adults>=1,]
+df.limpia<-df.limpia[df.limpia$children<=4 & df.limpia$babies<=4, ]
+df.limpia<-df.limpia[df.limpia$lead_time<=365, ]
+df.limpia <- df.limpia[df.limpia$stays_in_week_nights + df.limpia$stays_in_weekend_nights <= 30, ]
+df.limpia <- df.limpia[df.limpia$required_car_parking_spaces <= 2, ]
+
+summary(df.limpia)
+
 write.csv(df.limpia,'hotel_bookings_limpio.csv', row.names = TRUE)
