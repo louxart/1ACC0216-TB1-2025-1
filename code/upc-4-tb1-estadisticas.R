@@ -29,6 +29,116 @@ df$arrival_date_day_of_month<-as.factor(df$arrival_date_day_of_month)
 df$arrival_date_year<-as.factor(df$arrival_date_year)
 summary(df)
 
+#¿Cuantas reservas se realizaron por tipo de hotel? ¿Que tipo de hotel prefiere la gente?
+library(ggplot2)
+library(ggplot2)
+library(dplyr)
+library(ggrepel)
+# Tabla de frecuencias
+tabla_hoteles <- as.data.frame(table(df$hotel))
+colnames(tabla_hoteles) <- c("hotel", "cantidad")
+
+# Calcular porcentaje
+tabla_hoteles$porcentaje <- round(100 * tabla_hoteles$cantidad / sum(tabla_hoteles$cantidad), 1)
+tabla_hoteles$etiqueta <- paste0( tabla_hoteles$porcentaje, "% (", tabla_hoteles$cantidad, ")")
+
+# Gráfico de pastel
+ggplot(tabla_hoteles, aes(x = "", y = cantidad, fill = hotel)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y") +
+  geom_label_repel(aes(label = etiqueta),
+                   position = position_stack(vjust = 0.5),
+                   show.legend = FALSE,
+                   box.padding = 0.5,
+                   segment.color = "grey50") +
+  labs(title = "Preferencia y cantidad por tipo de hotel",
+       fill = "Tipo de hotel") +
+  theme_void()
+
+
+#¿Esta aumentando la demanda?
+#2015
+año_2015<-as.data.frame(table(df$arrival_date_month[df$arrival_date_year==2015]))
+ggplot(año_2015,
+       aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  geom_text(aes(label = Freq), color = "black", size = 5,vjust=1.5)+
+  labs(title = "Reservas por mes en 2015",
+       x = "Mes", y = "Cantidad de reservas") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(limits = month.name[month.name %in% unique(df$arrival_date_month[df$arrival_date_year == 2015])])
+#En el 2015 se logra visualizar que la demanda era demasiado baja solo teniendo reservas en la segunda parte del año
+
+#2016
+año_2016<-as.data.frame(table(df$arrival_date_month[df$arrival_date_year==2016]))
+ggplot(año_2016,
+       aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity", fill = "red") +
+  geom_text(aes(label = Freq), color = "black", size = 5,vjust=1.5)+
+  labs(title = "Reservas por mes en 2016",
+       x = "Mes", y = "Cantidad de reservas") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(limits = month.name[month.name %in% unique(df$arrival_date_month[df$arrival_date_year == 2016])])
+#En el 2016 se logra visualizar una gran demanda llegando a cubrir todo el año teniendo grande numeros en octubre
+
+#2017
+año_2017<-as.data.frame(table(df$arrival_date_month[df$arrival_date_year==2017]))
+ggplot(año_2017,
+       aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity", fill = "green") +
+  geom_text(aes(label = Freq), color = "black", size = 5,vjust=1.5)+
+  labs(title = "Reservas por mes en 2017",
+       x = "Mes", y = "Cantidad de reservas") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(limits = month.name[month.name %in% unique(df$arrival_date_month[df$arrival_date_year == 2017])])
+#En 2017 se visualiza que solo se tuvo demanda en la primera parte del año
+
+#Demando juntando todos los años
+tabla_años_demanda<-as.data.frame(table(df$arrival_date_year))
+ggplot(tabla_años_demanda,
+       aes(x = factor(Var1), y = Freq)) +
+  geom_bar(stat = "identity", fill = "darkolivegreen4") +
+  geom_text(aes(label = Freq), color = "black", size = 5,vjust=1.5)+
+  labs(title = "Reservas totales por año",
+       x = "Año", y = "Cantidad de reservas") +
+  theme_minimal()
+#Viendo el grafico de 2015, 2016 y 2017 se entiende la demanda si aumento pero que no se mantuvo 
+#debido a que de 2016 a 2017 la demanda bajo pero aun asi siendo mayor a 2015, logrando un buen numero de reservas
+#con menores reservas por mes
+
+#¿Cuáles son las temporadas de reservas (alta, media, baja)?
+tabla_mes <- as.data.frame(table(df$arrival_date_month))
+colnames(tabla_mes) <- c("Mes", "Reservas")
+
+tabla_mes$Mes <- factor(tabla_mes$Mes, levels = month.name)
+
+# Calcular percentiles
+p33 <- quantile(tabla_mes$Reservas, 0.33)
+p66 <- quantile(tabla_mes$Reservas, 0.66)
+# Clasificar en temporadas
+tabla_mes <- tabla_mes %>%
+  mutate(Temporada = case_when(
+    Reservas <= p33 ~ "Baja",
+    Reservas <= p66 ~ "Media",
+    TRUE ~ "Alta"
+  ))
+
+# Gráfico con colores por temporada
+ggplot(tabla_mes, aes(x = Mes, y = Reservas, fill = Temporada)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Reservas), vjust = 1.5, color = "white") +
+  scale_fill_manual(values = c("Baja" = "skyblue", "Media" = "orange", "Alta" = "darkred")) +
+  labs(title = "Temporadas de reservas por mes (promedio anual)",
+       x = "Mes", y = "Total de reservas") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#Se muesta en el grafico las temporadas categorisadas con alta, media y alta
+#Alta: Abril, mayo, julio y agosto
+#Media: Marzo, Junio, Setiembre y Octubre
+#Baja: Enero, Febrero, Noviembre y Diciembre
 #¿En que meses del año se producen más cancelaciones de reserva?
 library(ggplot2)
 df$reservation_status_date <- as.Date(df$reservation_status_date)
