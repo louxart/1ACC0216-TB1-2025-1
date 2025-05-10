@@ -92,7 +92,7 @@ atipicos #Hay 0 valores atipicos
 boxplot(df.limpia$adr,main="ADR sin outliners",col=5)
 summary(df.limpia$adr)
 
-df.limpia<- df.limpia[df.limpia$adults>=1,]
+df.limpia<- df.limpia[df.limpia$adults>=1 & df.limpia$adults<=5,]
 df.limpia<-df.limpia[df.limpia$children<=4 & df.limpia$babies<=4, ]
 df.limpia<-df.limpia[df.limpia$lead_time<=365, ]
 df.limpia <- df.limpia[df.limpia$stays_in_week_nights + df.limpia$stays_in_weekend_nights <= 30, ]
