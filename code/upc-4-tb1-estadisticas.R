@@ -96,7 +96,7 @@ ggplot(año_2017,
   scale_x_discrete(limits = month.name[month.name %in% unique(df$arrival_date_month[df$arrival_date_year == 2017])])
 #En 2017 se visualiza que solo se tuvo demanda en la primera parte del año
 
-#Demando juntando todos los años
+#Demanda juntando todos los años
 tabla_años_demanda<-as.data.frame(table(df$arrival_date_year))
 ggplot(tabla_años_demanda,
        aes(x = factor(Var1), y = Freq)) +
