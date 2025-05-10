@@ -1,6 +1,13 @@
+rm(list=ls(all=TRUE))
+graphics.off()
+cat("\014")
+
 library(readr)
+
 df <- read_csv("data/hotel_bookings_limpio.csv")
+
 summary(df)
+
 df$hotel<-as.factor(df$hotel)
 df$is_canceled<-as.factor(df$is_canceled)
 df$meal<-as.factor(df$meal)
