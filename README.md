@@ -36,6 +36,18 @@ Este conjunto de datos permite analizar patrones de reserva, comportamiento de l
 
 ### Conclusiones
 
+### Cantidad de reservas se realizan por tipo de hotel y que tipo de hotel prefiere el publico
+
+El tipo de hotel más reservado es el City Hotel, con 76,214 reservas, superando ampliamente al Resort Hotel, que cuenta con 39,108 reservas. Esto indica una clara preferencia por los hoteles urbanos, posiblemente debido a su ubicación céntrica y accesibilidad.
+
+### Aumento de la demanda con el tiempo
+
+La demanda aumentó significativamente de 2015 a 2016, extendiéndose a lo largo de todo el año, aunque en 2017 hubo una caída, concentrándose solo en la primera mitad del año. A pesar de la reducción en 2017, la demanda total fue aún mayor que en 2015, lo que sugiere una tendencia general de crecimiento, aunque con cierta inestabilidad.
+
+### Temporadas con reservas altas, medias y bajas
+
+Las reservas se concentran en los meses de abril, mayo, julio y agosto (temporada alta), lo que coincide con vacaciones y clima favorable. Marzo, junio, septiembre y octubre se consideran temporada media, mientras que enero, febrero, noviembre y diciembre corresponden a la temporada baja, con menor actividad de reservas.
+
 #### Duración promedio de estancias por tipo de hotel
 
 El análisis de la duración promedio de estancias revela diferencias significativas entre los tipos de hotel. Los hoteles tipo "Resort" muestran una duración promedio de estancia más larga que los hoteles tipo "City", lo que sugiere que los huéspedes tienden a permanecer más tiempo en resorts, probablemente por su naturaleza vacacional. Esta tendencia se confirma en el boxplot, donde además se observa una mayor variabilidad en la duración de estancias en resorts, con más valores atípicos hacia duraciones largas, mientras que los hoteles urbanos presentan estancias más cortas y homogéneas, posiblemente relacionadas con viajes de negocios o visitas breves a la ciudad.
@@ -47,6 +59,14 @@ La visualización de reservas con niños y/o bebés muestra que solo una pequeñ
 #### Importancia de contar con espacios de estacionamiento
 
 El análisis sobre la importancia de los espacios de estacionamiento revela que la gran mayoría de las reservas (más del 90%) no solicitan plazas de aparcamiento, lo que podría indicar que la mayoría de los huéspedes no viajan en vehículo propio o no consideran el estacionamiento como una necesidad prioritaria. Al examinar por tipo de hotel, se observa que los hoteles "City" tienen una proporción ligeramente menor de solicitudes de estacionamiento que los "Resort", posiblemente debido a la mejor conectividad mediante transporte público en entornos urbanos. Adicionalmente, el análisis de la relación entre solicitudes de estacionamiento y cancelaciones sugiere que las reservas con solicitud de estacionamiento tienen una tasa de cancelación ligeramente menor, lo que podría indicar un mayor compromiso o planificación por parte de estos huéspedes.
+
+### Meses del año en el cual se producen más cancelaciones de reservas
+
+El mes con mayor cantidad de cancelaciones es enero, con un total de 5,947 reservas canceladas. Esto sugiere que, a pesar de ser parte de la temporada baja, enero presenta una alta tasa de cancelaciones, posiblemente debido a cambios de planes tras las festividades de fin de año o a factores económicos y climáticos que afectan la decisión de viajar.
+
+### Pais con mayor numero de reservas
+
+El país con mayor número de reservas entre 2015 y 2017 es Portugal, con 46,215 reservas registradas. Este resultado es coherente con el hecho de que los datos fueron recolectados en dicho país, lo que sugiere una alta proporción de clientes nacionales o una fuerte demanda interna en el mercado hotelero portugués.
 
 ### Licencia
 
