@@ -3,8 +3,7 @@ graphics.off()
 cat("\014")
 
 library(readr)
-
-df <- read_csv("data/hotel_bookings_limpio.csv")
+df <- read.csv("data/hotel_bookings_limpio.csv")
 
 summary(df)
 
@@ -28,6 +27,160 @@ df$arrival_date_month<-as.factor(df$arrival_date_month)
 df$arrival_date_day_of_month<-as.factor(df$arrival_date_day_of_month)
 df$arrival_date_year<-as.factor(df$arrival_date_year)
 summary(df)
+library(ggplot2)
+library(dplyr)
+
+# ¿Cuál es la duración promedio de las estancias por tipo de hotel?
+# Calculamos la duración total de cada estancia
+df$total_nights <- df$stays_in_weekend_nights + df$stays_in_week_nights
+
+# Calculamos la duración promedio por tipo de hotel
+duracion_promedio <- df %>%
+  group_by(hotel) %>%
+  summarise(duracion_promedio = mean(total_nights, na.rm = TRUE))
+
+head(duracion_promedio)
+# La duracion promedio para City Hotel 3.00 noches
+# La duracion promedio para Resort Hotel 4.32 noches
+
+# Visualizamos con un gráfico de barras
+ggplot(duracion_promedio, aes(x = hotel, y = duracion_promedio, fill = hotel)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(duracion_promedio, 2)), vjust = -0.5, size = 4) +
+  labs(title = "Duración promedio de estancias por tipo de hotel",
+       x = "Tipo de hotel",
+       y = "Duración promedio (noches)") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(legend.position = "none")
+
+# ¿Cuántas reservas incluyen niños y/o bebés?	Sebas
+df$con_ninos_o_bebes <- (df$children > 0 | df$babies > 0)
+
+# Contamos las reservas con y sin niños/bebés
+reservas_ninos <- df %>%
+  group_by(con_ninos_o_bebes) %>%
+  summarise(cantidad = n()) %>%
+  mutate(porcentaje = cantidad / sum(cantidad) * 100)
+
+# Revisamos las cantidades:
+head(reservas_ninos)
+#   con_ninos_o_bebes cantidad porcentaje etiqueta              
+# 1 FALSE             106238   92.1       Sin niños/bebés
+# 2 TRUE              9084     7.88       Con niños/bebés
+
+# Etiquetas para el gráfico
+reservas_ninos$etiqueta <- ifelse(reservas_ninos$con_ninos_o_bebes,
+                                  "Con niños/bebés", 
+                                  "Sin niños/bebés")
+
+# Visualizamos con un gráfico de pastel
+ggplot(reservas_ninos, aes(x = "", y = cantidad, fill = etiqueta)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(porcentaje, 1), "%\n(", cantidad, " reservas)")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Proporción de reservas con niños y/o bebés",
+       fill = "Tipo de reserva") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        panel.grid = element_blank())
+
+# También podemos ver la distribución por tipo de hotel
+reservas_ninos_hotel <- df %>%
+  group_by(hotel, con_ninos_o_bebes) %>%
+  summarise(cantidad = n()) %>%
+  mutate(porcentaje = cantidad / sum(cantidad) * 100)
+
+# Etiquetas para el gráfico
+reservas_ninos_hotel$etiqueta <- ifelse(reservas_ninos_hotel$con_ninos_o_bebes, 
+                                        "Con niños/bebés", 
+                                        "Sin niños/bebés")
+head(reservas_ninos_hotel)
+# hotel        con_ninos_o_bebes cantidad porcentaje etiqueta       
+# 1 City Hotel   FALSE                71037      93.2  Sin niños/bebés
+# 2 City Hotel   TRUE                  5177       6.79 Con niños/bebés
+# 3 Resort Hotel FALSE                35201      90.0  Sin niños/bebés
+# 4 Resort Hotel TRUE                  3907       9.99 Con niños/bebés
+
+# Visualizamos con un gráfico de barras apiladas
+ggplot(reservas_ninos_hotel, aes(x = hotel, y = cantidad, fill = etiqueta)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = paste0(round(porcentaje, 1), "% (", cantidad, ")")), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(title = "Reservas con niños y/o bebés por tipo de hotel",
+       x = "Tipo de hotel",
+       y = "Número de reservas",
+       fill = "Tipo de reserva") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
+
+head(reservas_ninos_hotel)
+
+# ¿Es importante contar con espacios de estacionamiento?	Sebas
+
+# Analizamos la distribución de solicitudes de estacionamiento
+estacionamiento <- df %>%
+  group_by(required_car_parking_spaces) %>%
+  summarise(cantidad = n()) %>%
+  mutate(porcentaje = cantidad / sum(cantidad) * 100)
+
+# Visualizamos con un gráfico de barras
+ggplot(estacionamiento, aes(x = as.factor(required_car_parking_spaces), y = cantidad, fill = as.factor(required_car_parking_spaces))) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(porcentaje, 2), "%")), vjust = -0.5) +
+  labs(title = "Distribución de solicitudes de espacios de estacionamiento",
+       x = "Número de espacios solicitados",
+       y = "Número de reservas") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Blues") +
+  theme(legend.position = "none")
+
+# Analizamos por tipo de hotel
+estacionamiento_hotel <- df %>%
+  group_by(hotel, required_car_parking_spaces) %>%
+  summarise(cantidad = n()) %>%
+  mutate(porcentaje = cantidad / sum(cantidad) * 100)
+
+# Visualizamos con un gráfico de barras agrupadas
+ggplot(estacionamiento_hotel, aes(x = as.factor(required_car_parking_spaces), y = cantidad, fill = hotel)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Solicitudes de estacionamiento por tipo de hotel",
+       x = "Número de espacios solicitados",
+       y = "Número de reservas",
+       fill = "Tipo de hotel") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
+
+View(estacionamiento_hotel)
+
+# Análisis adicional: Influye el estacionamiento en la cancelación?
+estacionamiento_cancelacion <- df %>%
+  group_by(is_canceled, required_car_parking_spaces > 0) %>%
+  summarise(cantidad = n()) %>%
+  mutate(porcentaje = cantidad / sum(cantidad) * 100)
+
+# Renombramos las columnas para mejor interpretación
+names(estacionamiento_cancelacion)[2] <- "solicita_estacionamiento"
+estacionamiento_cancelacion$estado <- ifelse(estacionamiento_cancelacion$is_canceled == 1, 
+                                             "Cancelada", 
+                                             "No cancelada")
+estacionamiento_cancelacion$estacionamiento <- ifelse(estacionamiento_cancelacion$solicita_estacionamiento, 
+                                                      "Con estacionamiento", 
+                                                      "Sin estacionamiento")
+# Visualizamos la relación entre estacionamiento y cancelación
+ggplot(estacionamiento_cancelacion, aes(x = estacionamiento, y = porcentaje, fill = estado)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = paste0(round(porcentaje, 1), "% (", cantidad, ")")), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(title = "Relación entre solicitud de estacionamiento y cancelación",
+       x = "Solicitud de estacionamiento",
+       y = "Porcentaje de reservas",
+       fill = "Estado de la reserva") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
+
 
 #¿Cuantas reservas se realizaron por tipo de hotel? ¿Que tipo de hotel prefiere la gente?
 library(ggplot2)
@@ -140,7 +293,6 @@ ggplot(tabla_mes, aes(x = Mes, y = Reservas, fill = Temporada)) +
 #Media: Marzo, Junio, Setiembre y Octubre
 #Baja: Enero, Febrero, Noviembre y Diciembre
 #¿En que meses del año se producen más cancelaciones de reserva?
-library(ggplot2)
 df$reservation_status_date <- as.Date(df$reservation_status_date)
 df$mes <- format(df$reservation_status_date, "%B")
 df$mes <- as.factor(df$mes)
