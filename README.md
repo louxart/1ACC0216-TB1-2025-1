@@ -36,7 +36,7 @@ Este conjunto de datos permite analizar patrones de reserva, comportamiento de l
 
 ### Conclusiones
 
-### Cantidad de reservas que se realizan por tipo de hotel y que tipo de hotel prefiere el publico
+###  Cantidad de reservas que se realizan por tipo de hotel y que tipo de hotel prefiere el publico
 
 El tipo de hotel más reservado es el City Hotel, con 76,214 reservas, superando ampliamente al Resort Hotel, que cuenta con 39,108 reservas. Esto indica una clara preferencia por los hoteles urbanos, posiblemente debido a su ubicación céntrica y accesibilidad.
 
