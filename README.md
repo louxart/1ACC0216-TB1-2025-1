@@ -48,7 +48,7 @@ La demanda aumentó significativamente de 2015 a 2016, extendiéndose a lo largo
 
 Las reservas se concentran en los meses de abril, mayo, julio y agosto (temporada alta), lo que coincide con vacaciones y clima favorable. Marzo, junio, septiembre y octubre se consideran temporada media, mientras que enero, febrero, noviembre y diciembre corresponden a la temporada baja, con menor actividad de reservas.
 
-#### Duración promedio de estancias por tipo de hotel
+#### Duración promedio de las estancias por tipo de hotel
 
 El análisis de la duración promedio de estancias revela diferencias significativas entre los tipos de hotel. Los hoteles tipo "Resort" muestran una duración promedio de estancia más larga que los hoteles tipo "City", lo que sugiere que los huéspedes tienden a permanecer más tiempo en resorts, probablemente por su naturaleza vacacional. Esta tendencia se confirma en el boxplot, donde además se observa una mayor variabilidad en la duración de estancias en resorts, con más valores atípicos hacia duraciones largas, mientras que los hoteles urbanos presentan estancias más cortas y homogéneas, posiblemente relacionadas con viajes de negocios o visitas breves a la ciudad.
 
