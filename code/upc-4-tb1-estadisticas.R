@@ -3,8 +3,7 @@ graphics.off()
 cat("\014")
 
 library(readr)
-
-df <- read_csv("data/hotel_bookings_limpio.csv")
+df <- read.csv("data/hotel_bookings_limpio.csv")
 
 summary(df)
 
@@ -29,6 +28,7 @@ df$arrival_date_day_of_month<-as.factor(df$arrival_date_day_of_month)
 df$arrival_date_year<-as.factor(df$arrival_date_year)
 summary(df)
 library(ggplot2)
+library(dplyr)
 
 # ¿Cuál es la duración promedio de las estancias por tipo de hotel?
 # Calculamos la duración total de cada estancia
@@ -51,7 +51,7 @@ ggplot(duracion_promedio, aes(x = hotel, y = duracion_promedio, fill = hotel)) +
        x = "Tipo de hotel",
        y = "Duración promedio (noches)") +
   theme_minimal() +
-  scale_fill_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set2") +
   theme(legend.position = "none")
 
 # ¿Cuántas reservas incluyen niños y/o bebés?	Sebas
@@ -63,6 +63,12 @@ reservas_ninos <- df %>%
   summarise(cantidad = n()) %>%
   mutate(porcentaje = cantidad / sum(cantidad) * 100)
 
+# Revisamos las cantidades:
+head(reservas_ninos)
+#   con_ninos_o_bebes cantidad porcentaje etiqueta              
+# 1 FALSE             106238   92.1       Sin niños/bebés
+# 2 TRUE              9084     7.88       Con niños/bebés
+
 # Etiquetas para el gráfico
 reservas_ninos$etiqueta <- ifelse(reservas_ninos$con_ninos_o_bebes,
                                   "Con niños/bebés", 
@@ -72,7 +78,7 @@ reservas_ninos$etiqueta <- ifelse(reservas_ninos$con_ninos_o_bebes,
 ggplot(reservas_ninos, aes(x = "", y = cantidad, fill = etiqueta)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y", start = 0) +
-  geom_text(aes(label = paste0(round(porcentaje, 1), "%")), 
+  geom_text(aes(label = paste0(round(porcentaje, 1), "%\n(", cantidad, " reservas)")), 
             position = position_stack(vjust = 0.5)) +
   labs(title = "Proporción de reservas con niños y/o bebés",
        fill = "Tipo de reserva") +
@@ -91,6 +97,12 @@ reservas_ninos_hotel <- df %>%
 reservas_ninos_hotel$etiqueta <- ifelse(reservas_ninos_hotel$con_ninos_o_bebes, 
                                         "Con niños/bebés", 
                                         "Sin niños/bebés")
+head(reservas_ninos_hotel)
+# hotel        con_ninos_o_bebes cantidad porcentaje etiqueta       
+# 1 City Hotel   FALSE                71037      93.2  Sin niños/bebés
+# 2 City Hotel   TRUE                  5177       6.79 Con niños/bebés
+# 3 Resort Hotel FALSE                35201      90.0  Sin niños/bebés
+# 4 Resort Hotel TRUE                  3907       9.99 Con niños/bebés
 
 # Visualizamos con un gráfico de barras apiladas
 ggplot(reservas_ninos_hotel, aes(x = hotel, y = cantidad, fill = etiqueta)) +
@@ -103,6 +115,7 @@ ggplot(reservas_ninos_hotel, aes(x = hotel, y = cantidad, fill = etiqueta)) +
        fill = "Tipo de reserva") +
   theme_minimal() +
   scale_fill_brewer(palette = "Set2")
+
 head(reservas_ninos_hotel)
 
 # ¿Es importante contar con espacios de estacionamiento?	Sebas
@@ -139,6 +152,8 @@ ggplot(estacionamiento_hotel, aes(x = as.factor(required_car_parking_spaces), y 
        fill = "Tipo de hotel") +
   theme_minimal() +
   scale_fill_brewer(palette = "Set2")
+
+View(estacionamiento_hotel)
 
 # Análisis adicional: Influye el estacionamiento en la cancelación?
 estacionamiento_cancelacion <- df %>%
